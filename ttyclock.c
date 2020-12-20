@@ -114,10 +114,10 @@ init(void)
      }
 
      /* Create the date win */
-     ttyclock.datewin = newwin(DATEWINH, strlen(ttyclock.date.datestr) + 2,
+     ttyclock.datewin = newwin(DAYWINH, strlen(ttyclock.date.daystr) + DATEWINH + strlen(ttyclock.date.datestr) + 4,
                                ttyclock.geo.x + ttyclock.geo.h - 1,
                                ttyclock.geo.y + (ttyclock.geo.w / 2) -
-                               (strlen(ttyclock.date.datestr) / 2) - 1);
+                               (strlen(ttyclock.date.datestr) / 4) - (strlen(ttyclock.date.daystr) / 4) - 1);
      if(ttyclock.option.box && ttyclock.option.date) {
           box(ttyclock.datewin, 0, 0);
      }
@@ -171,9 +171,10 @@ update_hour(void)
 {
      int ihour;
      char tmpstr[128];
-
+     char tmpstr2[256];
      ttyclock.lt = time(NULL);
      ttyclock.tm = localtime(&(ttyclock.lt));
+
      if(ttyclock.option.utc) {
           ttyclock.tm = gmtime(&(ttyclock.lt));
      }
@@ -203,11 +204,28 @@ update_hour(void)
               ttyclock.option.format,
               ttyclock.tm);
      sprintf(ttyclock.date.datestr, "%s%s", tmpstr, ttyclock.meridiem);
+     switch(ttyclock.tm->tm_wday)
+     {
+          case 0: sprintf(tmpstr2, "%s", "  Sunday  ");
+                  break;
+          case 1: sprintf(tmpstr2, "%s", "  Monday  ");
+                  break;
+          case 2: sprintf(tmpstr2, "%s", "  Tuesday ");
+                  break;
+          case 3: sprintf(tmpstr2, "%s", " Wednesday");
+                  break;
+          case 4: sprintf(tmpstr2, "%s", " Thursday ");
+                  break;
+          case 5: sprintf(tmpstr2, "%s", "  Friday  ");
+                  break;
+          case 6: sprintf(tmpstr2, "%s", " Saturday ");
+                  break;
+     }
+     sprintf(ttyclock.date.daystr, "%s", tmpstr2);
 
      /* Set seconds */
      ttyclock.date.second[0] = ttyclock.tm->tm_sec / 10;
      ttyclock.date.second[1] = ttyclock.tm->tm_sec % 10;
-
      return;
 }
 
@@ -266,6 +284,10 @@ draw_clock(void)
      {
           wbkgdset(ttyclock.datewin, (COLOR_PAIR(2)));
           mvwprintw(ttyclock.datewin, (DATEWINH / 2), 1, ttyclock.date.datestr);
+          wrefresh(ttyclock.datewin);
+
+          wbkgdset(ttyclock.datewin, (COLOR_PAIR(2)));
+          mvwprintw(ttyclock.datewin, (DAYWINH / 2), 1, ttyclock.date.daystr);
           wrefresh(ttyclock.datewin);
      }
 

@@ -53,6 +53,7 @@
 #define NORMFRAMEW 35
 #define SECFRAMEW  54
 #define DATEWINH   3
+#define DAYWINH   4
 #define AMSIGN     " [AM]"
 #define PMSIGN     " [PM]"
 
@@ -102,6 +103,7 @@ typedef struct
           unsigned int minute[2];
           unsigned int second[2];
           char datestr[256];
+          char daystr[256];
      } date;
 
      /* time.h utils */
